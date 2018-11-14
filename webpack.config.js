@@ -1,13 +1,27 @@
-const config = {
-	mode: 'development',
-	output: {
-		publicPath:'/dist'
-	},
-	module :{
-		rules: [{
-				test: /\.jsx?$/,
-				use: ['babel-loader']
-		}]
-	}
-}
-module.exports = config
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+const htmlPlugin = new HtmlWebPackPlugin({
+  template: "./src/index.html",
+  filename: "./index.html"
+});
+
+
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['*', '.js', '.jsx']
+  },
+  plugins:[
+    htmlPlugin
+  ]
+};
