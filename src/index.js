@@ -21,7 +21,7 @@ class PlayGround extends React.Component {
 		//initial state
 		this.state = {
 			//names changed to number for easy call 
-			allBrands: ['1','2','3','4','5','6','7','8'],
+			allBrands: ['0','1','2','3','4','5','6','7'],
 			duplicatedCarsBrans: [],
 		  BrandsRandom: [],
 		  finalizedCarsBrands: [],
@@ -140,11 +140,11 @@ class Card extends React.Component {
 	render(){
 	  return (
 		<div className={"card" + (!this.props.close ? ' opened' : '') + (this.props.complete ? ' matched' : '')} onClick={() => this.clicked(this.props.brand)}>
-		  <div className="front">
+		  <div className="back">
 			Back
 		  </div>
-		  <div className="back">
-			<img src={images[this.props.brand-1]}/>
+		  <div className="front">
+			<img src={images[this.props.brand]}/>
 		  </div>
 		</div>
 	  )
