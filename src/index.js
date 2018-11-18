@@ -9,6 +9,7 @@ import img5 from './assets/logo_5.png'
 import img6 from './assets/logo_6.png'
 import img7 from './assets/logo_7.png'
 import img8 from './assets/logo_8.png'
+import back from './assets/back.png'
 
 const images = [img1, img2, img3, img4, img5, img6, img7, img8]
 
@@ -25,9 +26,10 @@ class PlayGround extends React.Component {
 			duplicatedCarsBrans: [],
 		  BrandsRandom: [],
 		  finalizedCarsBrands: [],
-			openedCarsBrands: []
+			openedCarsBrands: [],
+			winCondition:false
 		}
-		this.start()
+		this.setup()
 	  }
 	  // on click name of the card, and index in de array
 	  handleClick(name, index){
@@ -51,7 +53,7 @@ class PlayGround extends React.Component {
 				finalizedCarsBrands: finalizedCarsBrands
 		  })
 		  //checks again
-		  		if(this.state.openedCarsBrands.length == 2){
+		  if(this.state.openedCarsBrands.length == 2){
 					setTimeout(() => {
 						this.check()
 					},750)
@@ -63,6 +65,7 @@ class PlayGround extends React.Component {
 	  check(){
 		// the finalized pairs 
 			let finalizedCarsBrands_local = this.state.finalizedCarsBrands
+			let winCond = this.state.winCondition
 		// check the name is the same but the inmdex is diferent
 			if((this.state.openedCarsBrands[0].name == this.state.openedCarsBrands[1].name) && (this.state.openedCarsBrands[0].index != this.state.openedCarsBrands[1].index)){
 				// set complete to true
@@ -75,19 +78,32 @@ class PlayGround extends React.Component {
 			finalizedCarsBrands_local[this.state.openedCarsBrands[0].index].close = true
 			finalizedCarsBrands_local[this.state.openedCarsBrands[1].index].close = true
 			}
+			let cont = 0
+			finalizedCarsBrands_local.forEach((card)=>{
+				if(card.complete){
+						cont ++
+				}
+			})
+			// show win condition
+			if (cont == 16){
+					winCond=true
+					console.log("win condition on")
+			}
+			console.log("inside check",winCond)
 		// update state
 			this.setState({
 				// updates the arrays of the state
 		  	finalizedCarsBrands : finalizedCarsBrands_local,
-				openedCarsBrands : []	
+				openedCarsBrands : []	,
+				winCondition: winCond
 		})
 	  }
-	  start(){
+	  setup(){
 		  //sets empty the array
 			let finalizedCarsBrands = [];
 			// fill the array with two time the cars brands
 			this.state.duplicatedCarsBrans = this.state.allBrands.concat(this.state.allBrands)
-			this.state.BrandsRandom = this.shuffle(this.state.duplicatedCarsBrans)
+			this.state.BrandsRandom = this.randomize(this.state.duplicatedCarsBrans)
 			this.state.BrandsRandom.map((name,index) => {
 		 	finalizedCarsBrands.push({
 				name,
@@ -98,7 +114,7 @@ class PlayGround extends React.Component {
 		this.state.finalizedCarsBrands = finalizedCarsBrands
 		}
 		// shuffle cards
-	shuffle(array){
+	randomize(array){
 		let currentIndex = array.length, temporaryValue, randomIndex;
 		while (0 !== currentIndex) {
 		  randomIndex = Math.floor(Math.random() * currentIndex);
@@ -111,28 +127,36 @@ class PlayGround extends React.Component {
 		}
 		// renders the aplication.
 		render(){
-		return (
-		  <div className="playground">
-			  {
-				this.state.finalizedCarsBrands.map((brand, index) => {
-					// {console.log('index', index)}
-					// {console.log('bramd', brand.name)}
-					// {console.log('close', brand.close)}
-					// {console.log('complete', brand.complete)}
-				  return <Card brand={brand.name} click={() => {this.handleClick(brand.name,index)}} close={brand.close} complete={brand.complete}/>
-				})
-			  }
-		  </div>
-		)
-	  }
-  }
+			let messageWin = null
+			if (this.state.winCondition==true){
+				messageWin = <Message/>
+				console.log("entre al metodo porque gane!")
+			}
+
+			return (
+				<div className="App">
+				{messageWin}
+				<div className="playground">
+					{
+					this.state.finalizedCarsBrands.map((brand, index) => {
+						// {console.log('index', index)}
+						// {console.log('bramd', brand.name)}
+						// {console.log('close', brand.close)}
+						// {console.log('complete', brand.complete)}
+						return <Card brand={brand.name} click={() => {this.handleClick(brand.name,index)}} close={brand.close} complete={brand.complete}/>
+					})
+					}
+				</div>
+				</div>
+			)
+			}
+		}
+
   
 class Card extends React.Component {
 	constructor(props) {
 		super(props)
-		this.state = {
-
-		}
+		this.state = {}
 	}
 	clicked(brand){
 	  this.props.click(brand)
@@ -141,7 +165,7 @@ class Card extends React.Component {
 	  return (
 		<div className={"card" + (!this.props.close ? ' opened' : '') + (this.props.complete ? ' matched' : '')} onClick={() => this.clicked(this.props.brand)}>
 		  <div className="back">
-			Back
+			<img src={back}/>
 		  </div>
 		  <div className="front">
 			<img src={images[this.props.brand]}/>
@@ -150,5 +174,23 @@ class Card extends React.Component {
 	  )
 	}
 }
+
+class Message extends React.Component{
+	constructor(props) {
+		super(props)
+		this.state = {}
+	}
+	reloadGame(){
+		location.reload();
+	}
+	render(){
+		return (
+			<div className={"completed"} onClick={()=>{this.reloadGame()}}>
+			<h1>Game completed!!</h1>
+			<h2>click on any place and the page will be reloaded!</h2>
+			</div>
+			)
+		}
+	}
   
   ReactDOM.render( <PlayGround/>, document.getElementById('index'))
